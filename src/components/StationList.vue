@@ -115,10 +115,10 @@ export default {
 <style scoped>
 tr {
   background-image: linear-gradient(to top, rgba(0, 95, 145, 0.6) 0%, rgba(0, 130, 185, 0.8) 100%);
-  position: relative;
+  float:left;
 }
 td {
-  background-image: none;
+  
 }
 h3 {
   margin: 40px 0 0;
