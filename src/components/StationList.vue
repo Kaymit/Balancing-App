@@ -118,7 +118,7 @@ tr {
   background-repeat: no-repeat;
 }
 td {
-
+  background-image: none !important;
 }
 h3 {
   margin: 40px 0 0;
