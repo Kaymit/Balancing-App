@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <v-app>
-      <StationList msg="This is a list of mobi stations"/>
+      <StationList id="mobi-list" msg="This is a list of mobi stations"/>
     </v-app>
   </div>
 </template>
@@ -24,5 +24,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+#mobi-list {
+  margin: 8px;
 }
 </style>
