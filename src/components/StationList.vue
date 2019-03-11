@@ -177,6 +177,7 @@ export default {
       freeSlotsRow: true,
       avlBikesRow: true,
       stationIdRow: true,
+      drawer: null,
     }
   },
   props: {
@@ -255,16 +256,26 @@ export default {
 
 <style scoped>
 tr {
-  background-image: linear-gradient(to right, rgba(15, 85, 125, 0.66) 0%, rgba(20, 95, 145, 0.60) 15%, rgba(25, 85, 125, 0.68) 55%);
+  background-image:  rgb(76,111,155); /* Old browsers */
+  background-image: -moz-linear-gradient(top, rgba(76,111,155,0.8) 0%, rgba(45,124,175,0.8) 51%, rgba(80,140,180,1) 100%); /* FF3.6-15 */
+  background-image: -webkit-linear-gradient(top, rgba(76,111,155,1) 0%, rgba(45,124,175,1) 51%, rgba(80,140,180,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background-image: linear-gradient(to bottom, rgba(76,111,155,0.8) 0%, rgba(45,124,175,0.8) 51%, rgba(80,140,180,0.6) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c6f9b', endColorstr='#6eb1e5',GradientType=0 ); /* IE6-9 */
 }
-td {
-
+tr:nth-child(1n) td:first-child { 
+  border-top-left-radius: 10px; 
+  border-bottom-left-radius: 10px;
+}
+tr:nth-child(1n) td:last-child { 
+  border-top-right-radius: 10px; 
+  border-bottom-right-radius: 10px;
+}
+tr:nth-child(2n) {
+  background-color: rgb(237, 243, 252);
 }
 table {
   margin: 20px;
   padding: 8px;
-}
-a {
-  color: #42b983;
+  border-collapse: separate;
 }
 </style>
