@@ -7,9 +7,9 @@
         style="z-index: 3;"
       >
         <v-btn icon v-on:click='drawer = !drawer'>
-          <v-icon large>mdi-menu</v-icon>
+          <v-icon large>menu</v-icon>
         </v-btn>
-        <v-toolbar-title class="hidden-sm-and-down">MobiExpress</v-toolbar-title>
+        <v-toolbar-title>MobiExpress</v-toolbar-title>
         <v-toolbar-items class="hidden-md-and-down">
           <v-btn round flat large bold color="primary" v-on:click='isListActive = !isListActive'>Mobi Stations</v-btn>
           <v-btn round flat large bold color="red accent-2" v-on:click='isListActive = !isListActive'>High Priority Issues</v-btn>
@@ -18,10 +18,10 @@
         </v-toolbar-items>
         <v-spacer></v-spacer>
         <v-btn icon v-on:click="getStations">
-          <v-icon large>mdi-refresh</v-icon>
+          <v-icon large>refresh</v-icon>
         </v-btn>
         <v-btn @click="dialog = true" icon>
-          <v-icon large>mdi-dots-vertical</v-icon>
+          <v-icon large>more_vert</v-icon>
         </v-btn>
         <v-dialog v-model="dialog" max-width="35%">
           <v-card>
@@ -39,8 +39,8 @@
         </v-dialog>
       </v-toolbar>
       <v-btn
-        small
-        color="blue darken-2"
+        large
+        color="blue lighten-3"
         primary
         fixed
         top
@@ -48,8 +48,9 @@
         fab
         @click="scrollToTop"
         style="z-index: 2;"
+        v-bind:class="{ 'scrolled-up-fab': !isScrolledDown }"
       >
-        <v-icon large>mdi-chevron-double-up</v-icon>
+        <v-icon large>arrow_upward</v-icon>
       </v-btn>
 
       <v-navigation-drawer
@@ -58,13 +59,24 @@
         temporary
       >
         <v-list class="pa-1">
-          <v-list-tile avatar>
-            <v-list-tile-avatar>
-              <img src="https://randomuser.me/api/portraits/men/85.jpg">
-            </v-list-tile-avatar>
-
+          <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>John Leider</v-list-tile-title>
+              <v-btn round flat large bold color="primary" v-on:click='isListActive = !isListActive'>Mobi Stations</v-btn>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-btn round flat large bold color="red accent-2" v-on:click='isListActive = !isListActive'>High Priority Issues</v-btn>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-btn round flat large bold color="orange darken-3" v-on:click='isListActive = !isListActive'>Medium Priority Issues</v-btn>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-btn round flat large bold color="green darken-1" v-on:click='isListActive = !isListActive'>Low Priority Issues</v-btn>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -89,6 +101,7 @@
       </v-navigation-drawer>
     
       <v-data-table
+        v-scroll="onScrollDown"
         v-if="isListActive"
         :headers="headers"
         :items="stations"
@@ -173,6 +186,8 @@ export default {
       stations: [],
       isListActive: true,
       dialog: false,
+      isScrolledDown: false,
+      isScrollingDown: false,
       totalSlotsRow: true,
       freeSlotsRow: true,
       avlBikesRow: true,
@@ -215,6 +230,10 @@ export default {
       }
       this.$vuetify.goTo("#topScroll", options);
       return;
+    },
+    onScrollDown() {
+      this.isScrolledDown = (window.pageYOffset >= 500) ? true : false;
+        
     },
   },
   watch: {
@@ -277,5 +296,10 @@ table {
   margin: 20px;
   padding: 8px;
   border-collapse: separate;
+}
+.scrolled-up-fab {
+  -webkit-transform: translateY(-150%);
+  transform: translateY(-150%);
+  transition: transform 300ms linear;
 }
 </style>
