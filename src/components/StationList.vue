@@ -1,79 +1,157 @@
 <template>
-  <div mobi-stationlist>
-    <v-toolbar class="elevation-1" color="white">
-      <v-btn round flat large bold color="primary" v-on:click='isListActive = !isListActive'>Mobi Stations</v-btn>
-      <v-btn round flat large bold color="red accent-2" v-on:click='isListActive = !isListActive'>High Priority Issues</v-btn>
-      <v-btn round flat large bold color="orange darken-3" v-on:click='isListActive = !isListActive'>Medium Priority Issues</v-btn>
-      <v-btn round flat large bold color="green darken-1" v-on:click='isListActive = !isListActive'>Low Priority Issues</v-btn>
-      <v-spacer></v-spacer>
-      <v-btn round color="primary" @click="dialog = true">Options</v-btn>
-      <v-dialog v-model="dialog" max-width="35%">
-        <v-card>
-          <v-card-title class="headline">Options</v-card-title>
-          <v-card-actions>
-            <v-container fluid>
-              <v-switch v-model="stationIdRow" :label="'Station ID'"></v-switch>
-              <v-switch v-model="totalSlotsRow" :label="'Total Slots'"></v-switch>
-              <v-switch v-model="freeSlotsRow" :label="'Free Slots'"></v-switch>
-              <v-switch v-model="avlBikesRow" :label="'Available Bikes'"></v-switch>
-            </v-container>
+  <div>
+    <v-divider id="topScroll"/>
+      <v-toolbar 
+        scroll-off-screen 
+        app
+        style="z-index: 3;"
+      >
+        <v-btn icon v-on:click='drawer = !drawer'>
+          <v-icon large>mdi-menu</v-icon>
+        </v-btn>
+        <v-toolbar-title class="hidden-sm-and-down">MobiExpress</v-toolbar-title>
+        <v-toolbar-items class="hidden-md-and-down">
+          <v-btn round flat large bold color="primary" v-on:click='isListActive = !isListActive'>Mobi Stations</v-btn>
+          <v-btn round flat large bold color="red accent-2" v-on:click='isListActive = !isListActive'>High Priority Issues</v-btn>
+          <v-btn round flat large bold color="orange darken-3" v-on:click='isListActive = !isListActive'>Medium Priority Issues</v-btn>
+          <v-btn round flat large bold color="green darken-1" v-on:click='isListActive = !isListActive'>Low Priority Issues</v-btn>
+        </v-toolbar-items>
+        <v-spacer></v-spacer>
+        <v-btn icon v-on:click="getStations">
+          <v-icon large>mdi-refresh</v-icon>
+        </v-btn>
+        <v-btn @click="dialog = true" icon>
+          <v-icon large>mdi-dots-vertical</v-icon>
+        </v-btn>
+        <v-dialog v-model="dialog" max-width="35%">
+          <v-card>
+            <v-card-title class="headline">Options</v-card-title>
+            <v-card-actions>
+              <v-container fluid>
+                <v-switch v-model="stationIdRow" :label="'Station ID'"></v-switch>
+                <v-switch v-model="totalSlotsRow" :label="'Total Slots'"></v-switch>
+                <v-switch v-model="freeSlotsRow" :label="'Free Slots'"></v-switch>
+                <v-switch v-model="avlBikesRow" :label="'Available Bikes'"></v-switch>
+              </v-container>
               <v-switch v-model="expand" :label="`${expand ? 'Multiple expanded rows' : 'One expanded row'}`"></v-switch>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-btn round color="primary" dark v-on:click="getStations">Refresh</v-btn>
-    </v-toolbar>
-    <v-data-table
-      v-if="isListActive"
-      :headers="headers"
-      :items="stations"
-      :expand="expand"
-      class="elevation-2"
-      v-bind:pagination.sync="pagination"
-      item-key="name"
-      must-sort
-    >
-<!-- Vue binds style to object referencing prop item, key is a workaround from 
-https://stackoverflow.com/questions/50289811/vuetify-table-custom-css-isnt-applied-to-first-row-after-page-reload
-because first item in table was not rendering inline CSS 
--->
-      <template slot="items" slot-scope="props">
-        <tr 
-          :key="props.index" 
-          :style="{ 
-            backgroundSize: ((props.item.percent_full) + '% 100%'),
-            borderRadius: '14px',
-            backgroundClip: 'padding-box',
-            padding: '10px',
-            position: 'relative',
-            textShadow: '0.7px 0.7px 1px #5B73A3FF',
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar>
+      <v-btn
+        small
+        color="blue darken-2"
+        primary
+        fixed
+        top
+        right
+        fab
+        @click="scrollToTop"
+        style="z-index: 2;"
+      >
+        <v-icon large>mdi-chevron-double-up</v-icon>
+      </v-btn>
 
-          }" 
-          @click="props.expanded = !props.expanded"
-          class="elevation-1"
-        >
-          <td 
-            v-for="header in headers" 
-            :key="header.station_id"
-            class="text-xs-left">{{ props.item[header.value] }}
-          </td>
-        </tr>
-      </template>
-      <template slot="expand" slot-scope="props">
-        <v-card flat>
-          <v-card-text>
-            Station: {{ props.item.name }} <br />
-            Total Slots: {{ props.item.total_slots }}
-          </v-card-text>
-        </v-card>
-      </template>
-    </v-data-table>
+      <v-navigation-drawer
+        v-model="drawer"
+        fixed
+        temporary
+      >
+        <v-list class="pa-1">
+          <v-list-tile avatar>
+            <v-list-tile-avatar>
+              <img src="https://randomuser.me/api/portraits/men/85.jpg">
+            </v-list-tile-avatar>
+
+            <v-list-tile-content>
+              <v-list-tile-title>John Leider</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+
+        <v-list class="pt-0" dense>
+          <v-divider></v-divider>
+
+          <v-list-tile
+            v-for="item in drawerItems"
+            :key="item.title"
+          >
+          <!--
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+          -->
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer>
+    
+      <v-data-table
+        v-if="isListActive"
+        :headers="headers"
+        :items="stations"
+        :expand="expand"
+        class="elevation-2"
+        v-bind:pagination.sync="pagination"
+        item-key="name"
+        must-sort
+        subheading
+      >
+        <template slot="items" slot-scope="props">
+          <tr 
+            :key="props.index" 
+            :style="{ 
+              backgroundSize: ((props.item.percent_full) + '% 100%'),
+              backgroundClip: 'padding-box',
+              padding: '10px',
+              position: 'relative',
+              textShadow: '0.7px 0.7px 1px rgba(230,220,255,0.7)',
+            }" 
+            @click="props.expanded = !props.expanded"
+            class="elevation-1"
+          >
+            <td 
+              v-for="header in headers" 
+              :key="header.station_id"
+              class="text-xs-left">{{ props.item[header.value] }}
+            </td>
+          </tr>
+        </template>
+        <template slot="expand" slot-scope="props">
+          <v-container grid-list-md text-xs-center>
+            <v-layout row wrap align-center>
+              <v-flex xs4 fill-height headline>
+                <a v-bind:href="'https://vancouver-ca.smoove.pro/stations/#/' + props.item.station_id"> 
+                  {{ props.item.name }} 
+                </a>
+              </v-flex>
+              <v-flex xs4>
+                <v-progress-circular
+                  :rotate="360"
+                  :size="100"
+                  :width="15"
+                  :value="props.item.battery_level"
+                  color="green darken-1"
+                >
+                  {{ (props.item.battery_level * 13.6 / 100).toFixed(2) }} V
+                </v-progress-circular>
+              </v-flex>
+              <v-flex xs4 fill-height headline>
+                Slots: {{ props.item.total_slots }}
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </template>
+      </v-data-table>
   </div>
 </template>
 
 <script>
 //import Station from './Station.vue'
-import axios from 'axios'
+//import axios from 'axios'
+import StationService from '../services/StationService.js'
 
 export default {
   name: 'StationList',
@@ -111,8 +189,7 @@ export default {
   methods: {
     getStations() {
 //Currently switching the request param for production
-      //axios.get('http://localhost:3000')
-      axios.get('http://balancing-api.herokuapp.com:80')
+      StationService.fetchStations()
         .then((response) => {
             if (response.data != null)
               this.stations = this.processStations(response.data);
@@ -128,6 +205,15 @@ export default {
         station.name = station.name.slice(5);
       }
       return stations;
+    },
+    scrollToTop() {
+      let options = {
+        duration: 600,
+        offset: 0,
+        easing: "easeInOutCubic"
+      }
+      this.$vuetify.goTo("#topScroll", options);
+      return;
     },
   },
   watch: {
