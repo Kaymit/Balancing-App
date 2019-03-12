@@ -48,7 +48,7 @@
         fab
         @click="scrollToTop"
         style="z-index: 2;"
-        v-bind:class="{ 'scrolled-up-fab': !isScrolledDown }"
+        v-bind:class="{ 'scrolled-up-fab': isScrolledUp, 'scrolling-up-fab': isScrollingUp }"
       >
         <v-icon large>arrow_upward</v-icon>
       </v-btn>
@@ -101,7 +101,7 @@
       </v-navigation-drawer>
     
       <v-data-table
-        v-scroll="onScrollDown"
+        v-scroll="onScroll"
         v-if="isListActive"
         :headers="headers"
         :items="stations"
@@ -186,13 +186,16 @@ export default {
       stations: [],
       isListActive: true,
       dialog: false,
-      isScrolledDown: false,
+      isScrolledUp: false,
       isScrollingDown: false,
+      isScrollingUp: false,
+      scrollCheckInt: 0,
       totalSlotsRow: true,
       freeSlotsRow: true,
       avlBikesRow: true,
       stationIdRow: true,
       drawer: null,
+      drawerItems: [],
     }
   },
   props: {
@@ -231,9 +234,22 @@ export default {
       this.$vuetify.goTo("#topScroll", options);
       return;
     },
-    onScrollDown() {
-      this.isScrolledDown = (window.pageYOffset >= 500) ? true : false;
-        
+    onScroll() {
+      this.isScrolledUp = (window.pageYOffset <= 500) ? true : false;
+      if (window.pageYOffset >= 500) {
+        if (this.scrollCheckInt < (window.pageYOffset - 400)) {
+          this.scrollCheckInt = window.pageYOffset;
+          this.isScrollingUp = false;
+        } else if (this.scrollCheckInt > window.pageYOffset) {
+          this.scrollCheckInt = window.pageYOffset;
+          this.isScrollingUp = true;
+        }
+      }
+      else {
+        this.isScrollingUp = false;
+      }
+      
+      this.isScrolledUp = (window.pageYOffset <= 500) ? true : false;        
     },
   },
   watch: {
@@ -298,8 +314,11 @@ table {
   border-collapse: separate;
 }
 .scrolled-up-fab {
-  -webkit-transform: translateY(-150%);
-  transform: translateY(-150%);
+  -webkit-transform: translateY(-400%);
+  transform: translateY(-400%);
   transition: transform 300ms linear;
+}
+.scrolling-up-fab {
+  -webkit-transform: translateY(100%);
 }
 </style>
